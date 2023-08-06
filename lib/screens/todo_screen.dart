@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/model/todo_data.dart';
 import 'package:todo_app/services/todo_list.dart';
 
 class ToDoScreen extends StatelessWidget {
@@ -6,6 +7,8 @@ class ToDoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ToDoData todo = ToDoData();
+
     return Scaffold(
       body: FutureBuilder(
         future: ToDoList()
@@ -13,7 +16,7 @@ class ToDoScreen extends StatelessWidget {
         builder: (context, snapshot) {
           Widget newsListSliver;
           if (snapshot.hasData) {
-            print(snapshot.data['tasks'][0]);
+            todo.add(snapshot.data['tasks']);
             newsListSliver = SliverList(
                 delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
@@ -24,21 +27,21 @@ class ToDoScreen extends StatelessWidget {
                     right: 32.0,
                     bottom: 16.0,
                   ),
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'Today',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        todo.list[index].createdAt,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8.0,
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(Icons.fastfood),
-                          SizedBox(
+                          const Icon(Icons.local_activity),
+                          const SizedBox(
                             width: 16.0,
                           ),
                           Expanded(
@@ -46,19 +49,20 @@ class ToDoScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Honey Pancake',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  todo.list[index].title,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  'All happiness depends on a leisurely breakfast. - John Gunther',
+                                  todo.list[index].description,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 3,
-                                  style: TextStyle(color: Colors.black54),
+                                  style: const TextStyle(color: Colors.black54),
                                 ),
                               ],
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.more_vert,
                             color: Colors.black54,
                             size: 14.0,
@@ -69,7 +73,7 @@ class ToDoScreen extends StatelessWidget {
                   ),
                 );
               },
-              childCount: 20,
+              childCount: todo.list.length,
             ));
           } else {
             newsListSliver = SliverToBoxAdapter(
