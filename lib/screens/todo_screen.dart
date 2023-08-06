@@ -52,20 +52,61 @@ class ToDoScreen extends StatelessWidget {
           ),
           const SliverToBoxAdapter(
             child: SizedBox(
-              height: 20,
-              child: Center(
-                child: Text('Scroll to see the SliverAppBar in effect.'),
-              ),
+              height: 20.0,
             ),
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 return Container(
-                  color: index.isOdd ? Colors.white : Colors.black12,
-                  height: 100.0,
-                  child: Center(
-                    child: Text('$index', textScaleFactor: 5),
+                  padding: const EdgeInsets.only(
+                    left: 32.0,
+                    top: 16.0,
+                    right: 32.0,
+                    bottom: 16.0,
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Today',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 8.0,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.fastfood),
+                          SizedBox(
+                            width: 16.0,
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Honey Pancake',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'All happiness depends on a leisurely breakfast. - John Gunther',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                  style: TextStyle(color: Colors.black54),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            Icons.more_vert,
+                            color: Colors.black54,
+                            size: 14.0,
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                 );
               },
