@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/screens/lock_screen.dart';
 import 'package:todo_app/screens/todo_screen.dart';
 
 void main() {
@@ -14,10 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ToDo',
-      theme: ThemeData(
-          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-          ),
-      home: const ToDoScreen(),
+      home: const LockScreen(),
     );
   }
 }
