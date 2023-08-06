@@ -12,7 +12,7 @@ class TaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TaskData taskData = Provider.of<TaskData>(context);
+    final TaskData taskData = Provider.of<TaskData>(context, listen: false);
     ScrollController scrollController = ScrollController();
 
     Future<void> loadMoreItems() async {
@@ -56,26 +56,34 @@ class TaskScreen extends StatelessWidget {
   }
 }
 
-class TaskList extends StatelessWidget {
+class TaskList extends StatefulWidget {
   const TaskList({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final TaskData taskData = Provider.of<TaskData>(context);
+  State<TaskList> createState() => _TaskListState();
+}
 
-    taskData.getTasksList(offset: 0, limit: 10).then((data) {
-      context.read<TaskData>().add(data['tasks']);
-      taskData.setTotalPages(data['totalPages']);
+class _TaskListState extends State<TaskList> {
+  @override
+  void initState() {
+    super.initState();
+    final TaskData taskDataRead = context.read<TaskData>();
+    taskDataRead.getTasksList(offset: 0, limit: 10).then((data) {
+      taskDataRead.add(data['tasks']);
+      taskDataRead.setTotalPages(data['totalPages']);
     });
-    final data = taskData.getGroupedTasks();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final data = Provider.of<TaskData>(context, listen: true).getGroupedTasks();
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          final date = data.keys.elementAt(index);
-          final tasks = data[date]!;
+          final DateTime date = data.keys.elementAt(index);
+          final List<Task> tasks = data[date] ?? [];
 
           List<Widget> taskWidget = [];
           for (Task task in tasks) {
@@ -97,7 +105,7 @@ class TaskList extends StatelessWidget {
                 const SizedBox(height: 8.0),
                 Column(
                   children: taskWidget,
-                )
+                ),
               ],
             ),
           );

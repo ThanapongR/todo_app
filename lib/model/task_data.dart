@@ -59,7 +59,7 @@ class TaskData extends ChangeNotifier {
   }
 
   void setTotalPages(int pages) {
-    _totalPages = pages;
+    _totalPages = pages - 1;
   }
 
   void setCurrentPage(int page) {
