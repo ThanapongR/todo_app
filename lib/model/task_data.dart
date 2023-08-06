@@ -1,9 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:todo_app/model/task.dart';
 import 'package:todo_app/services/networking.dart';
 
 const tasksListURL = 'https://todo-list-api-mfchjooefq-as.a.run.app/todo-list';
 
-class TaskData {
+class TaskData extends ChangeNotifier {
   List<Task> tasks = [];
   int _currentPage = 0;
   int _totalPages = 0;
@@ -36,6 +37,8 @@ class TaskData {
         tasks.add(task);
       }
     }
+
+    notifyListeners();
   }
 
   Map<DateTime, List<Task>> getGroupedTasks() {
