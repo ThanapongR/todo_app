@@ -1,4 +1,7 @@
 import 'package:todo_app/model/task.dart';
+import 'package:todo_app/services/networking.dart';
+
+const tasksListURL = 'https://todo-list-api-mfchjooefq-as.a.run.app/todo-list';
 
 class TaskData {
   List<Task> tasks = [];
@@ -7,6 +10,17 @@ class TaskData {
   bool isLoading = false;
 
   TaskData();
+
+  Future<dynamic> getTasksList(
+      {required int offset, required int limit}) async {
+    NetworkHelper networkHelper = NetworkHelper(
+        url: Uri.parse(
+            '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=TODO'));
+
+    dynamic tasksList = await networkHelper.getData();
+
+    return tasksList;
+  }
 
   void add(List<dynamic> data) {
     for (var d in data) {

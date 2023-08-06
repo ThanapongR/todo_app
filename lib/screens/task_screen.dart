@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide AppBar;
 import 'package:intl/intl.dart';
 import 'package:todo_app/model/task.dart';
 import 'package:todo_app/model/task_data.dart';
-import 'package:todo_app/services/todo_list.dart';
+import 'package:todo_app/utilities/constants.dart';
+import 'package:todo_app/widgets/appbar.dart';
+import 'package:todo_app/widgets/task_tile.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({Key? key}) : super(key: key);
@@ -16,7 +18,7 @@ class _TaskScreenState extends State<TaskScreen> {
   final TaskData _todo = TaskData();
 
   void loadItems() {
-    TaskList().getTasksList(offset: 0, limit: 10).then((data) {
+    _todo.getTasksList(offset: 0, limit: 10).then((data) {
       setState(() {
         _todo.add(data['tasks']);
         _todo.setTotalPages(data['totalPages']);
@@ -44,7 +46,7 @@ class _TaskScreenState extends State<TaskScreen> {
       if (nextPage >= 0) {
         _todo.isLoading = true;
         _todo.setCurrentPage(nextPage);
-        final dynamic data = await TaskList().getTasksList(
+        final dynamic data = await _todo.getTasksList(
           offset: nextPage,
           limit: 10,
         );
@@ -64,129 +66,18 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   Widget build(BuildContext context) {
     final task = _todo.getGroupedTasks();
-    print(task.length);
 
     return Scaffold(
       body: CustomScrollView(
         controller: _scrollController,
         slivers: <Widget>[
-          SliverAppBar(
-            pinned: true,
-            snap: true,
-            floating: true,
-            expandedHeight: 172.0,
-            collapsedHeight: 72.0,
-            elevation: 0.0,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(32.0),
-                bottomRight: Radius.circular(32.0),
-              ),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              expandedTitleScale: 1.0,
-              title: const SafeArea(
-                child: ToDoBadge(),
-              ),
-              background: SafeArea(
-                child: Container(
-                  padding: const EdgeInsets.only(left: 32.0, right: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Container(
-                        alignment: Alignment.centerRight,
-                        child: const CircleAvatar(
-                          child: Icon(Icons.account_circle),
-                        ),
-                      ),
-                      const Text(
-                        "Hi! Bob",
-                        style: TextStyle(fontSize: 28.0),
-                      ),
-                      const Text("Welcome to To-Do app"),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            backgroundColor: const Color(0xFFECEDFD),
-          ),
+          const AppBar(),
           const SliverToBoxAdapter(
             child: SizedBox(
               height: 20.0,
             ),
           ),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              final date = task.keys.elementAt(index);
-              final tasks = task[date]!;
-
-              List<Widget> taskWidget = [];
-
-              for (Task task in tasks) {
-                taskWidget.add(Container(
-                  margin: const EdgeInsets.only(bottom: 16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.local_activity),
-                      const SizedBox(
-                        width: 16.0,
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              task.title,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              task.description,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                              style: const TextStyle(color: Colors.black54),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(
-                        Icons.more_vert,
-                        color: Colors.black54,
-                        size: 14.0,
-                      ),
-                    ],
-                  ),
-                ));
-              }
-
-              return Container(
-                padding: const EdgeInsets.only(
-                  left: 32.0,
-                  right: 32.0,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      DateFormat('dd MMM yyyy').format(date).toUpperCase(),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 8.0,
-                    ),
-                    Column(
-                      children: taskWidget,
-                    )
-                  ],
-                ),
-              );
-            },
-            childCount: task.length,
-          )),
+          TaskList(task: task),
           const SliverToBoxAdapter(
             child: SizedBox(
               height: 16.0,
@@ -204,93 +95,51 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 }
 
-class ToDoBadge extends StatelessWidget {
-  const ToDoBadge({
+class TaskList extends StatelessWidget {
+  const TaskList({
     super.key,
+    required this.task,
   });
+
+  final Map<DateTime, List<Task>> task;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(
-        left: 12.0,
-        top: 8.0,
-        right: 12.0,
-        bottom: 12.0,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F8F8),
-        borderRadius: BorderRadius.circular(32.0),
-      ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Badge(
-            selected: true,
-            title: 'To-do',
-          ),
-          SizedBox(
-            width: 8.0,
-          ),
-          Badge(
-            selected: false,
-            title: 'Doing',
-          ),
-          SizedBox(
-            width: 8.0,
-          ),
-          Badge(
-            selected: false,
-            title: 'Done',
-          ),
-        ],
-      ),
-    );
-  }
-}
+    return SliverList(
+        delegate: SliverChildBuilderDelegate(
+      (BuildContext context, int index) {
+        final date = task.keys.elementAt(index);
+        final tasks = task[date]!;
 
-class Badge extends StatelessWidget {
-  final bool selected;
-  final String title;
+        List<Widget> taskWidget = [];
 
-  const Badge({
-    super.key,
-    required this.selected,
-    required this.title,
-  });
+        for (Task task in tasks) {
+          taskWidget.add(TaskTile(task: task));
+        }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(
-        left: 12.0,
-        top: 4.0,
-        right: 12.0,
-        bottom: 4.0,
-      ),
-      decoration: selected
-          ? BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  Color(0xFF86CAF6),
-                  Color(0xFFA1A5E8),
-                ],
+        return Container(
+          padding: const EdgeInsets.only(
+            left: 32.0,
+            right: 32.0,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                DateFormat('dd MMM yyyy').format(date).toUpperCase(),
+                style: kTaskDateTextStyle,
               ),
-              borderRadius: BorderRadius.circular(32.0),
-            )
-          : BoxDecoration(
-              color: const Color(0xFFF8F8F8),
-              borderRadius: BorderRadius.circular(32.0),
-            ),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 18.0,
-          color: selected ? Colors.white : Colors.black26,
-        ),
-      ),
-    );
+              const SizedBox(
+                height: 8.0,
+              ),
+              Column(
+                children: taskWidget,
+              )
+            ],
+          ),
+        );
+      },
+      childCount: task.length,
+    ));
   }
 }
