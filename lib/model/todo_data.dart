@@ -4,6 +4,7 @@ class ToDoData {
   List<ToDo> list = [];
   int _currentPage = 0;
   int _totalPages = 0;
+  bool isLoading = false;
 
   ToDoData();
 
@@ -13,7 +14,7 @@ class ToDoData {
         id: d['id'] ?? '',
         title: d['title'] ?? '',
         description: d['description'] ?? '',
-        createdAt: d['createdAt'] ?? '',
+        createdAt: DateTime.tryParse(d['createdAt'] ?? '') ?? DateTime.now(),
         status: d['status'] ?? '',
       );
 
@@ -23,14 +24,35 @@ class ToDoData {
     }
   }
 
+  Map<DateTime, List<ToDo>> getGroupedTasks() {
+    final Map<DateTime, List<ToDo>> groupedTasks = {};
+
+    for (final ToDo l in list) {
+      DateTime dateTime =
+          DateTime(l.createdAt.year, l.createdAt.month, l.createdAt.day);
+
+      if (!groupedTasks.containsKey(dateTime)) {
+        groupedTasks[dateTime] = [];
+      }
+
+      groupedTasks[dateTime]?.add(l);
+    }
+
+    return groupedTasks;
+  }
+
   void setTotalPages(int pages) {
     _totalPages = pages;
   }
 
+  void setCurrentPage(int page) {
+    _currentPage = page;
+  }
+
   int getNextPage() {
     if (_currentPage < _totalPages) {
-      _currentPage++;
-      return _currentPage;
+      final nextPage = _currentPage + 1;
+      return nextPage;
     } else {
       return -1;
     }

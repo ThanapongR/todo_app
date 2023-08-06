@@ -2,7 +2,7 @@ class ToDo {
   String id;
   String title;
   String description;
-  String createdAt;
+  DateTime createdAt;
   String status;
 
   ToDo({
