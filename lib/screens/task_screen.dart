@@ -12,25 +12,16 @@ class TaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TaskData taskData = Provider.of<TaskData>(context, listen: false);
     ScrollController scrollController = ScrollController();
 
     Future<void> loadMoreItems() async {
-      if (taskData.isLoading == false) {
+      final TaskData taskData = Provider.of<TaskData>(context, listen: false);
+      if (taskData.getLoading() == false) {
         int nextPage = taskData.getNextPage();
         if (nextPage >= 0) {
-          taskData.isLoading = true;
+          taskData.setLoading(true);
           taskData.setCurrentPage(nextPage);
-          final dynamic data = await taskData.getTasksList(
-            offset: nextPage,
-            limit: 10,
-          );
-          taskData.add(data['tasks']);
-          taskData.setTotalPages(data['totalPages']);
-
-          Future.delayed(const Duration(milliseconds: 10), () {
-            taskData.isLoading = false; // Reset the flag after loading
-          });
+          taskData.loadTasks(offset: nextPage, limit: 10);
         }
       }
     }
@@ -69,21 +60,17 @@ class _TaskListState extends State<TaskList> {
   @override
   void initState() {
     super.initState();
-    final TaskData taskDataRead = context.read<TaskData>();
-    taskDataRead.getTasksList(offset: 0, limit: 10).then((data) {
-      taskDataRead.add(data['tasks']);
-      taskDataRead.setTotalPages(data['totalPages']);
-    });
+    context.read<TaskData>().loadTasks(offset: 0, limit: 10);
   }
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<TaskData>(context, listen: true).getGroupedTasks();
+    final TaskData taskData = Provider.of<TaskData>(context, listen: true);
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          final DateTime date = data.keys.elementAt(index);
-          final List<Task> tasks = data[date] ?? [];
+          final DateTime date = taskData.groupedTasks.keys.elementAt(index);
+          final List<Task> tasks = taskData.groupedTasks[date] ?? [];
 
           List<Widget> taskWidget = [];
           for (Task task in tasks) {
@@ -110,7 +97,7 @@ class _TaskListState extends State<TaskList> {
             ),
           );
         },
-        childCount: data.length,
+        childCount: taskData.groupedTasks.length,
       ),
     );
   }

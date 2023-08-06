@@ -1,30 +1,57 @@
 import 'package:flutter/foundation.dart';
 import 'package:todo_app/model/task.dart';
+import 'package:todo_app/model/task_status.dart';
 import 'package:todo_app/services/networking.dart';
 
 const tasksListURL = 'https://todo-list-api-mfchjooefq-as.a.run.app/todo-list';
 
 class TaskData extends ChangeNotifier {
-  List<Task> tasks = [];
-  int _currentPage = 0;
-  int _totalPages = 0;
-  bool isLoading = false;
+  Map<DateTime, List<Task>> groupedTasks = {};
+  int _status = 1;
 
-  TaskData();
+  List<TaskStatus> taskStatus =
+      List<TaskStatus>.generate(3, (_) => TaskStatus(tasks: []));
 
-  Future<dynamic> getTasksList(
+  Future<dynamic> _getTasksList(
       {required int offset, required int limit}) async {
+    String status = '';
+
+    if (_status == 0) {
+      status = 'TODO';
+    } else if (_status == 1) {
+      status = 'DOING';
+    } else if (_status == 2) {
+      status = 'DONE';
+    }
+
     NetworkHelper networkHelper = NetworkHelper(
-        url: Uri.parse(
-            '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=TODO'));
+      url: Uri.parse(
+          '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=$status'),
+    );
+
+    // print('$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=$status');
 
     dynamic tasksList = await networkHelper.getData();
 
     return tasksList;
   }
 
-  void add(List<dynamic> data) {
-    for (var d in data) {
+  void _genGroupedTasks() {
+    groupedTasks.clear();
+    for (final Task task in taskStatus[_status].tasks) {
+      DateTime dateTime = DateTime(
+          task.createdAt.year, task.createdAt.month, task.createdAt.day);
+      if (!groupedTasks.containsKey(dateTime)) {
+        groupedTasks[dateTime] = [];
+      }
+      groupedTasks[dateTime]?.add(task);
+    }
+  }
+
+  void loadTasks({required int offset, required int limit}) async {
+    dynamic data = await _getTasksList(offset: offset, limit: limit);
+
+    for (var d in data['tasks'] ?? []) {
       final Task task = Task(
         id: d['id'] ?? '',
         title: d['title'] ?? '',
@@ -33,45 +60,53 @@ class TaskData extends ChangeNotifier {
         status: d['status'] ?? '',
       );
 
-      if (!tasks.any((obj) => obj.id == task.id)) {
-        tasks.add(task);
+      if (!taskStatus[_status].tasks.any((obj) => obj.id == task.id)) {
+        taskStatus[_status].tasks.add(task);
       }
     }
+    taskStatus[_status].totalPages = (data['totalPages'] ?? 1) - 1;
+
+    _genGroupedTasks();
+
+    Future.delayed(const Duration(milliseconds: 20), () {
+      taskStatus[_status].loading = false; // Reset the flag after
+    });
 
     notifyListeners();
   }
 
-  Map<DateTime, List<Task>> getGroupedTasks() {
-    final Map<DateTime, List<Task>> groupedTasks = {};
-
-    for (final Task task in tasks) {
-      DateTime dateTime = DateTime(
-          task.createdAt.year, task.createdAt.month, task.createdAt.day);
-
-      if (!groupedTasks.containsKey(dateTime)) {
-        groupedTasks[dateTime] = [];
-      }
-
-      groupedTasks[dateTime]?.add(task);
-    }
-
-    return groupedTasks;
-  }
-
-  void setTotalPages(int pages) {
-    _totalPages = pages - 1;
-  }
-
   void setCurrentPage(int page) {
-    _currentPage = page;
+    taskStatus[_status].currentPage = page;
   }
 
   int getNextPage() {
-    if (_currentPage < _totalPages) {
-      final nextPage = _currentPage + 1;
+    if (taskStatus[_status].currentPage < taskStatus[_status].totalPages) {
+      final nextPage = taskStatus[_status].currentPage + 1;
       return nextPage;
     } else {
       return -1;
     }
+  }
+
+  bool getLoading() {
+    return taskStatus[_status].loading;
+  }
+
+  void setLoading(bool b) {
+    taskStatus[_status].loading = b;
+  }
+
+  void changeStatus(int status) {
+    _status = status;
+    if (taskStatus[_status].tasks.isEmpty) {
+      loadTasks(offset: 0, limit: 10);
+    } else {
+      _genGroupedTasks();
+    }
+    notifyListeners();
+  }
+
+  int getStatus() {
+    return _status;
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/model/task_data.dart';
 import 'package:todo_app/utilities/constants.dart';
 
 class TaskBadge extends StatelessWidget {
@@ -23,18 +25,18 @@ class TaskBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Badge(
-            selected: true,
             title: 'To-do',
+            index: 0,
           ),
           SizedBox(width: 8.0),
           Badge(
-            selected: false,
             title: 'Doing',
+            index: 1,
           ),
           SizedBox(width: 8.0),
           Badge(
-            selected: false,
             title: 'Done',
+            index: 2,
           ),
         ],
       ),
@@ -43,17 +45,18 @@ class TaskBadge extends StatelessWidget {
 }
 
 class Badge extends StatelessWidget {
-  final bool selected;
   final String title;
+  final int index;
 
   const Badge({
     super.key,
-    required this.selected,
     required this.title,
+    required this.index,
   });
 
   @override
   Widget build(BuildContext context) {
+    TaskData taskData = Provider.of<TaskData>(context, listen: true);
     return Container(
       padding: const EdgeInsets.only(
         left: 12.0,
@@ -61,7 +64,7 @@ class Badge extends StatelessWidget {
         right: 12.0,
         bottom: 4.0,
       ),
-      decoration: selected
+      decoration: taskData.getStatus() == index
           ? BoxDecoration(
               gradient: const LinearGradient(
                 begin: Alignment.centerLeft,
@@ -74,12 +77,18 @@ class Badge extends StatelessWidget {
               color: kGreyColor,
               borderRadius: BorderRadius.circular(32.0),
             ),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 18.0,
-          color: selected ? Colors.white : Colors.black26,
+      child: InkWell(
+        child: Text(
+          title,
+          style: TextStyle(
+            fontSize: 18.0,
+            color:
+                taskData.getStatus() == index ? Colors.white : Colors.black26,
+          ),
         ),
+        onTap: () {
+          context.read<TaskData>().changeStatus(index);
+        },
       ),
     );
   }
