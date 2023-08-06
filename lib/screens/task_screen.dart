@@ -12,8 +12,8 @@ class TaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ScrollController scrollController = ScrollController();
     TaskData taskData = Provider.of<TaskData>(context);
+    ScrollController scrollController = ScrollController();
 
     Future<void> loadMoreItems() async {
       if (taskData.isLoading == false) {
@@ -47,17 +47,9 @@ class TaskScreen extends StatelessWidget {
         controller: scrollController,
         slivers: const <Widget>[
           AppBar(),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 20.0,
-            ),
-          ),
+          SliverToBoxAdapter(child: SizedBox(height: 20.0)),
           TaskList(),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 16.0,
-            ),
-          ),
+          SliverToBoxAdapter(child: SizedBox(height: 16.0)),
         ],
       ),
     );
@@ -86,7 +78,6 @@ class TaskList extends StatelessWidget {
           final tasks = data[date]!;
 
           List<Widget> taskWidget = [];
-
           for (Task task in tasks) {
             taskWidget.add(TaskTile(task: task));
           }
@@ -103,9 +94,7 @@ class TaskList extends StatelessWidget {
                   DateFormat('dd MMM yyyy').format(date).toUpperCase(),
                   style: kTaskDateTextStyle,
                 ),
-                const SizedBox(
-                  height: 8.0,
-                ),
+                const SizedBox(height: 8.0),
                 Column(
                   children: taskWidget,
                 )

@@ -26,16 +26,12 @@ class TaskBadge extends StatelessWidget {
             selected: true,
             title: 'To-do',
           ),
-          SizedBox(
-            width: 8.0,
-          ),
+          SizedBox(width: 8.0),
           Badge(
             selected: false,
             title: 'Doing',
           ),
-          SizedBox(
-            width: 8.0,
-          ),
+          SizedBox(width: 8.0),
           Badge(
             selected: false,
             title: 'Done',

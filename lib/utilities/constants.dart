@@ -17,5 +17,5 @@ const kTaskDescTextStyle = TextStyle(
   color: Colors.black54,
 );
 
-const kPrimaryColor = Color(0xFFF8F8F8);
+const kPrimaryColor = Color(0xFFECEDFD);
 const kGreyColor = Color(0xFFF8F8F8);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/utilities/constants.dart';
 import 'package:todo_app/widgets/task_badge.dart';
 
 class AppBar extends StatelessWidget {
@@ -48,7 +49,7 @@ class AppBar extends StatelessWidget {
           ),
         ),
       ),
-      backgroundColor: const Color(0xFFECEDFD),
+      backgroundColor: kPrimaryColor,
     );
   }
 }
