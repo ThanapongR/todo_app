@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/model/task_data.dart';
+import 'package:todo_app/screens/task_screen.dart';
 
 class LockScreen extends StatelessWidget {
   const LockScreen({Key? key}) : super(key: key);
@@ -203,7 +206,6 @@ class PassCodeButton extends StatelessWidget {
         shape: BoxShape.circle,
       ), // LinearGradientBoxDecoration
       child: InkWell(
-        onTap: () {},
         customBorder: const CircleBorder(),
         child: Center(
           child: Text(
@@ -214,6 +216,16 @@ class PassCodeButton extends StatelessWidget {
             ),
           ),
         ),
+        onTap: () {
+          print(Provider.of<TaskData>(context, listen: false)
+              .taskStatus[0]
+              .tasks
+              .length);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const TaskScreen()),
+          );
+        },
       ), // Red will correctly spread over gradient
     );
   }
