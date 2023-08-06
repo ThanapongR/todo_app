@@ -17,5 +17,12 @@ const kTaskDescTextStyle = TextStyle(
   color: Colors.black54,
 );
 
+const kPasscodeTitleTextStyle = TextStyle(
+  fontSize: 28.0,
+  fontWeight: FontWeight.bold,
+  color: Colors.black54,
+);
+
 const kPrimaryColor = Color(0xFFECEDFD);
 const kGreyColor = Color(0xFFF8F8F8);
+const kDarkGreyColor = Color(0xFFDFE0E5);
