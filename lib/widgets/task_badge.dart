@@ -87,7 +87,7 @@ class Badge extends StatelessWidget {
           ),
         ),
         onTap: () {
-          context.read<TaskData>().changeStatus(index);
+          Provider.of<TaskData>(context, listen: false).changeStatus(index);
         },
       ),
     );

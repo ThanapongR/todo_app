@@ -7,7 +7,7 @@ const tasksListURL = 'https://todo-list-api-mfchjooefq-as.a.run.app/todo-list';
 
 class TaskData extends ChangeNotifier {
   Map<DateTime, List<Task>> groupedTasks = {};
-  int _status = 1;
+  int _status = 0;
 
   List<TaskStatus> taskStatus =
       List<TaskStatus>.generate(3, (_) => TaskStatus(tasks: []));
@@ -48,7 +48,19 @@ class TaskData extends ChangeNotifier {
     }
   }
 
+  int _getNextPage() {
+    if (taskStatus[_status].currentPage < taskStatus[_status].totalPages) {
+      final nextPage = taskStatus[_status].currentPage + 1;
+      return nextPage;
+    } else {
+      return -1;
+    }
+  }
+
   void loadTasks({required int offset, required int limit}) async {
+    taskStatus[_status].loading = true;
+    taskStatus[_status].currentPage = offset;
+
     dynamic data = await _getTasksList(offset: offset, limit: limit);
 
     for (var d in data['tasks'] ?? []) {
@@ -75,30 +87,18 @@ class TaskData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCurrentPage(int page) {
-    taskStatus[_status].currentPage = page;
-  }
-
-  int getNextPage() {
-    if (taskStatus[_status].currentPage < taskStatus[_status].totalPages) {
-      final nextPage = taskStatus[_status].currentPage + 1;
-      return nextPage;
-    } else {
-      return -1;
+  Future<void> loadMoreItems() async {
+    if (taskStatus[_status].loading == false) {
+      int nextPage = _getNextPage();
+      if (nextPage >= 0) {
+        loadTasks(offset: nextPage, limit: 10);
+      }
     }
-  }
-
-  bool getLoading() {
-    return taskStatus[_status].loading;
-  }
-
-  void setLoading(bool b) {
-    taskStatus[_status].loading = b;
   }
 
   void changeStatus(int status) {
     _status = status;
-    if (taskStatus[_status].tasks.isEmpty) {
+    if (taskStatus[_status].currentPage == -1) {
       loadTasks(offset: 0, limit: 10);
     } else {
       _genGroupedTasks();
@@ -108,5 +108,11 @@ class TaskData extends ChangeNotifier {
 
   int getStatus() {
     return _status;
+  }
+
+  void removeTask(String id) {
+    taskStatus[_status].tasks.removeWhere((task) => task.id == id);
+    _genGroupedTasks();
+    notifyListeners();
   }
 }

@@ -14,22 +14,10 @@ class TaskScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     ScrollController scrollController = ScrollController();
 
-    Future<void> loadMoreItems() async {
-      final TaskData taskData = Provider.of<TaskData>(context, listen: false);
-      if (taskData.getLoading() == false) {
-        int nextPage = taskData.getNextPage();
-        if (nextPage >= 0) {
-          taskData.setLoading(true);
-          taskData.setCurrentPage(nextPage);
-          taskData.loadTasks(offset: nextPage, limit: 10);
-        }
-      }
-    }
-
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
           scrollController.position.maxScrollExtent - 100.0) {
-        loadMoreItems();
+        context.read<TaskData>().loadMoreItems();
       }
     });
 
@@ -77,24 +65,21 @@ class _TaskListState extends State<TaskList> {
             taskWidget.add(TaskTile(task: task));
           }
 
-          return Container(
-            padding: const EdgeInsets.only(
-              left: 32.0,
-              right: 32.0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(left: 32.0),
+                child: Text(
                   DateFormat('dd MMM yyyy').format(date).toUpperCase(),
                   style: kTaskDateTextStyle,
                 ),
-                const SizedBox(height: 8.0),
-                Column(
-                  children: taskWidget,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8.0),
+              Column(
+                children: taskWidget,
+              ),
+            ],
           );
         },
         childCount: taskData.groupedTasks.length,

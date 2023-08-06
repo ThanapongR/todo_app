@@ -8,7 +8,7 @@ class TaskStatus {
 
   TaskStatus({
     required this.tasks,
-    this.currentPage = 0,
+    this.currentPage = -1,
     this.totalPages = 0,
     this.loading = false,
   });
