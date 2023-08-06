@@ -2,21 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/model/todo_data.dart';
 import 'package:todo_app/services/todo_list.dart';
 
-class ToDoScreen extends StatelessWidget {
+class ToDoScreen extends StatefulWidget {
   const ToDoScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    ToDoData todo = ToDoData();
+  State<ToDoScreen> createState() => _ToDoScreenState();
+}
 
+class _ToDoScreenState extends State<ToDoScreen> {
+  final ScrollController _scrollController = ScrollController();
+  final ToDoData _todo = ToDoData();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _loadMoreItems();
+    }
+  }
+
+  Future<void> _loadMoreItems() async {
+    int nextPage = _todo.getNextPage();
+    if (nextPage >= 0) {
+      final dynamic data =
+          await ToDoList().getTodoList(offset: nextPage, limit: 10);
+      setState(() {
+        _todo.add(data['tasks']);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: ToDoList()
-            .getTodoList(), // this is a code smell. Make sure that the future is NOT recreated when build is called. Create the future in initState instead.
+        future: ToDoList().getTodoList(offset: 0, limit: 10),
         builder: (context, snapshot) {
           Widget newsListSliver;
           if (snapshot.hasData) {
-            todo.add(snapshot.data['tasks']);
+            _todo.setTotalPages(snapshot.data['totalPages']);
+            _todo.add(snapshot.data['tasks']);
             newsListSliver = SliverList(
                 delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
@@ -31,7 +61,7 @@ class ToDoScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        todo.list[index].createdAt,
+                        _todo.list[index].createdAt,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(
@@ -49,12 +79,12 @@ class ToDoScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  todo.list[index].title,
+                                  _todo.list[index].title,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  todo.list[index].description,
+                                  _todo.list[index].description,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 3,
                                   style: const TextStyle(color: Colors.black54),
@@ -73,7 +103,7 @@ class ToDoScreen extends StatelessWidget {
                   ),
                 );
               },
-              childCount: todo.list.length,
+              childCount: _todo.list.length,
             ));
           } else {
             newsListSliver = SliverToBoxAdapter(
@@ -87,6 +117,7 @@ class ToDoScreen extends StatelessWidget {
           }
 
           return CustomScrollView(
+            controller: _scrollController,
             slivers: <Widget>[
               SliverAppBar(
                 pinned: true,
@@ -141,6 +172,12 @@ class ToDoScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }
 

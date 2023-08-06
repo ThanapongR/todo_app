@@ -2,10 +2,12 @@ import 'package:todo_app/model/todo.dart';
 
 class ToDoData {
   List<ToDo> list = [];
+  int _currentPage = 0;
+  int _totalPages = 0;
 
   ToDoData();
 
-  add(List<dynamic> data) {
+  void add(List<dynamic> data) {
     for (var d in data) {
       final ToDo todo = ToDo(
         id: d['id'] ?? '',
@@ -18,6 +20,19 @@ class ToDoData {
       if (!list.any((obj) => obj.id == todo.id)) {
         list.add(todo);
       }
+    }
+  }
+
+  void setTotalPages(int pages) {
+    _totalPages = pages;
+  }
+
+  int getNextPage() {
+    if (_currentPage < _totalPages) {
+      _currentPage++;
+      return _currentPage;
+    } else {
+      return -1;
     }
   }
 }
