@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:todo_app/model/todo.dart';
-import 'package:todo_app/model/todo_data.dart';
+import 'package:todo_app/model/task.dart';
+import 'package:todo_app/model/task_data.dart';
 import 'package:todo_app/services/todo_list.dart';
 
-class ToDoScreen extends StatefulWidget {
-  const ToDoScreen({Key? key}) : super(key: key);
+class TaskScreen extends StatefulWidget {
+  const TaskScreen({Key? key}) : super(key: key);
 
   @override
-  State<ToDoScreen> createState() => _ToDoScreenState();
+  State<TaskScreen> createState() => _TaskScreenState();
 }
 
-class _ToDoScreenState extends State<ToDoScreen> {
+class _TaskScreenState extends State<TaskScreen> {
   final ScrollController _scrollController = ScrollController();
-  final ToDoData _todo = ToDoData();
+  final TaskData _todo = TaskData();
 
   void loadItems() {
-    ToDoList().getTodoList(offset: 0, limit: 10).then((data) {
+    TaskList().getTasksList(offset: 0, limit: 10).then((data) {
       setState(() {
         _todo.add(data['tasks']);
         _todo.setTotalPages(data['totalPages']);
@@ -44,7 +44,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
       if (nextPage >= 0) {
         _todo.isLoading = true;
         _todo.setCurrentPage(nextPage);
-        final dynamic data = await ToDoList().getTodoList(
+        final dynamic data = await TaskList().getTasksList(
           offset: nextPage,
           limit: 10,
         );
@@ -125,7 +125,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
 
               List<Widget> taskWidget = [];
 
-              for (ToDo task in tasks) {
+              for (Task task in tasks) {
                 taskWidget.add(Container(
                   margin: const EdgeInsets.only(bottom: 16.0),
                   child: Row(

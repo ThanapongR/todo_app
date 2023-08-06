@@ -1,16 +1,16 @@
-import 'package:todo_app/model/todo.dart';
+import 'package:todo_app/model/task.dart';
 
-class ToDoData {
-  List<ToDo> list = [];
+class TaskData {
+  List<Task> tasks = [];
   int _currentPage = 0;
   int _totalPages = 0;
   bool isLoading = false;
 
-  ToDoData();
+  TaskData();
 
   void add(List<dynamic> data) {
     for (var d in data) {
-      final ToDo todo = ToDo(
+      final Task task = Task(
         id: d['id'] ?? '',
         title: d['title'] ?? '',
         description: d['description'] ?? '',
@@ -18,24 +18,24 @@ class ToDoData {
         status: d['status'] ?? '',
       );
 
-      if (!list.any((obj) => obj.id == todo.id)) {
-        list.add(todo);
+      if (!tasks.any((obj) => obj.id == task.id)) {
+        tasks.add(task);
       }
     }
   }
 
-  Map<DateTime, List<ToDo>> getGroupedTasks() {
-    final Map<DateTime, List<ToDo>> groupedTasks = {};
+  Map<DateTime, List<Task>> getGroupedTasks() {
+    final Map<DateTime, List<Task>> groupedTasks = {};
 
-    for (final ToDo l in list) {
-      DateTime dateTime =
-          DateTime(l.createdAt.year, l.createdAt.month, l.createdAt.day);
+    for (final Task task in tasks) {
+      DateTime dateTime = DateTime(
+          task.createdAt.year, task.createdAt.month, task.createdAt.day);
 
       if (!groupedTasks.containsKey(dateTime)) {
         groupedTasks[dateTime] = [];
       }
 
-      groupedTasks[dateTime]?.add(l);
+      groupedTasks[dateTime]?.add(task);
     }
 
     return groupedTasks;
