@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/model/passcode_data.dart';
 import 'package:todo_app/screens/task_screen.dart';
 import 'package:todo_app/utilities/constants.dart';
@@ -32,7 +33,7 @@ class PassCodeButton extends StatelessWidget {
             ),
           ),
         ),
-        onTap: () {
+        onTap: () async {
           final PasscodeData passcodeData =
               Provider.of<PasscodeData>(context, listen: false);
           passcodeData.addPasscode(title);
@@ -41,10 +42,15 @@ class PassCodeButton extends StatelessWidget {
           if (passcode.length >= 6) {
             passcodeData.clear();
             if (passcode == '123456') {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const TaskScreen()),
-              );
+              final prefs = await SharedPreferences.getInstance();
+              final currentTime = DateTime.now().millisecondsSinceEpoch;
+              await prefs.setInt('lastActiveTimestamp', currentTime);
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TaskScreen()),
+                );
+              }
             }
           }
         },

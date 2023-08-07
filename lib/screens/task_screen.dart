@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart' hide AppBar;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/model/task.dart';
 import 'package:todo_app/model/task_data.dart';
 import 'package:todo_app/screens/lock_screen.dart';
@@ -18,28 +19,52 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  DateTime _lastInteractionTime = DateTime.now();
-  Timer? _timer;
+  Timer? _inactivityTimer;
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final duration = DateTime.now().difference(_lastInteractionTime);
-      if (duration.inSeconds > 10) {
-        setState(() {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LockScreen()),
-          );
-        });
-        _timer?.cancel();
+  Future<void> _loadLastActiveTime(BuildContext context2) async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastActiveTimestamp = prefs.getInt('lastActiveTimestamp') ?? 0;
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+    final elapsedTimeInSeconds =
+        ((currentTime - lastActiveTimestamp) / 1000).round();
+
+    if (10 - elapsedTimeInSeconds <= 0) {
+      if (context.mounted) {
+        await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LockScreen()),
+        );
       }
+    } else {
+      _startInactivityTimer();
+    }
+  }
+
+  void _startInactivityTimer() {
+    _inactivityTimer?.cancel();
+    _inactivityTimer = Timer(const Duration(seconds: 10), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LockScreen()),
+      );
     });
+  }
+
+  Future<void> _updateLastActiveTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+    await prefs.setInt('lastActiveTimestamp', currentTime);
+  }
+
+  void _updateActivity() {
+    _updateLastActiveTime();
+    _startInactivityTimer();
   }
 
   @override
   void initState() {
     super.initState();
-    _startTimer();
+    _loadLastActiveTime(context);
   }
 
   @override
@@ -65,9 +90,10 @@ class _TaskScreenState extends State<TaskScreen> {
           ],
         ),
         onPointerDown: (_) {
-          setState(() {
-            _lastInteractionTime = DateTime.now();
-          });
+          _updateActivity();
+        },
+        onPointerMove: (_) {
+          _updateActivity();
         },
       ),
     );
@@ -75,7 +101,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel the timer when the widget is disposed
+    _inactivityTimer?.cancel(); // Cancel the timer when the widget is disposed
     super.dispose();
   }
 }
