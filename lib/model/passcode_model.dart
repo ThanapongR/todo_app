@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class PasscodeData extends ChangeNotifier {
+class PasscodeModel extends ChangeNotifier {
   String passcode = '';
 
   void addPasscode(String num) {

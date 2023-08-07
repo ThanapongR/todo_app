@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:todo_app/model/passcode_data.dart';
+import 'package:todo_app/model/passcode_model.dart';
 import 'package:todo_app/screens/task_screen.dart';
 import 'package:todo_app/utilities/constants.dart';
 
@@ -34,8 +34,8 @@ class PassCodeButton extends StatelessWidget {
           ),
         ),
         onTap: () async {
-          final PasscodeData passcodeData =
-              Provider.of<PasscodeData>(context, listen: false);
+          final PasscodeModel passcodeData =
+              Provider.of<PasscodeModel>(context, listen: false);
           passcodeData.addPasscode(title);
 
           String passcode = passcodeData.passcode;

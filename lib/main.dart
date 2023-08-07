@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/model/passcode_data.dart';
-import 'package:todo_app/model/task_data.dart';
+import 'package:todo_app/model/passcode_model.dart';
+import 'package:todo_app/model/task_model.dart';
 import 'package:todo_app/screens/task_screen.dart';
 
 void main() {
@@ -16,8 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => TaskData()),
-        ChangeNotifierProvider(create: (context) => PasscodeData()),
+        ChangeNotifierProvider(create: (context) => TaskModel()),
+        ChangeNotifierProvider(create: (context) => PasscodeModel()),
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,

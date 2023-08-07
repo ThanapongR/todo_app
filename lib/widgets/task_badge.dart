@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/model/task_data.dart';
+import 'package:todo_app/model/task_model.dart';
 import 'package:todo_app/utilities/constants.dart';
 
 class TaskBadge extends StatelessWidget {
@@ -56,7 +56,7 @@ class Badge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TaskData taskData = Provider.of<TaskData>(context, listen: true);
+    TaskModel taskData = Provider.of<TaskModel>(context, listen: true);
     return Container(
       padding: const EdgeInsets.only(
         left: 12.0,
@@ -87,7 +87,7 @@ class Badge extends StatelessWidget {
           ),
         ),
         onTap: () {
-          Provider.of<TaskData>(context, listen: false).changeStatus(index);
+          Provider.of<TaskModel>(context, listen: false).changeStatus(index);
         },
       ),
     );

@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/model/task.dart';
-import 'package:todo_app/model/task_data.dart';
-import 'package:todo_app/screens/lock_screen.dart';
+import 'package:todo_app/model/task_model.dart';
+import 'package:todo_app/screens/passcode_screen.dart';
 import 'package:todo_app/utilities/constants.dart';
 import 'package:todo_app/widgets/appbar.dart';
 import 'package:todo_app/widgets/task_tile.dart';
@@ -21,7 +21,7 @@ class TaskScreen extends StatefulWidget {
 class _TaskScreenState extends State<TaskScreen> {
   Timer? _inactivityTimer;
 
-  Future<void> _loadLastActiveTime(BuildContext context2) async {
+  Future<void> _loadLastActiveTime() async {
     final prefs = await SharedPreferences.getInstance();
     final lastActiveTimestamp = prefs.getInt('lastActiveTimestamp') ?? 0;
     final currentTime = DateTime.now().millisecondsSinceEpoch;
@@ -64,7 +64,7 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
-    _loadLastActiveTime(context);
+    _loadLastActiveTime();
   }
 
   @override
@@ -74,7 +74,7 @@ class _TaskScreenState extends State<TaskScreen> {
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
           scrollController.position.maxScrollExtent - 100.0) {
-        context.read<TaskData>().loadMoreItems();
+        context.read<TaskModel>().loadMoreItems();
       }
     });
 
@@ -120,14 +120,14 @@ class _TaskListState extends State<TaskList> {
   void initState() {
     super.initState();
 
-    if (context.read<TaskData>().taskStatus[0].tasks.isEmpty) {
-      context.read<TaskData>().loadTasks(offset: 0, limit: 10);
+    if (context.read<TaskModel>().taskStatus[0].tasks.isEmpty) {
+      context.read<TaskModel>().loadTasks(offset: 0, limit: 10);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final TaskData taskData = Provider.of<TaskData>(context, listen: true);
+    final TaskModel taskData = Provider.of<TaskModel>(context, listen: true);
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {

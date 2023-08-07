@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/model/passcode_data.dart';
+import 'package:todo_app/model/passcode_model.dart';
 import 'package:todo_app/widgets/obscure_icon.dart';
 
 class ObscureIcons extends StatelessWidget {
@@ -10,8 +10,8 @@ class ObscureIcons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PasscodeData passcodeData =
-        Provider.of<PasscodeData>(context, listen: true);
+    final PasscodeModel passcodeData =
+        Provider.of<PasscodeModel>(context, listen: true);
     int length = passcodeData.passcode.length;
     return SizedBox(
       height: 192.0,
