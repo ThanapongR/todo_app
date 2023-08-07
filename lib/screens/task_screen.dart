@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart' hide AppBar;
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/model/lock_model.dart';
-import 'package:todo_app/model/task.dart';
 import 'package:todo_app/model/task_model.dart';
-import 'package:todo_app/utilities/constants.dart';
 import 'package:todo_app/widgets/appbar.dart';
-import 'package:todo_app/widgets/task_tile.dart';
+import 'package:todo_app/widgets/task_list.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -50,62 +47,6 @@ class _TaskScreenState extends State<TaskScreen> {
         onPointerMove: (_) {
           context.read<LockModel>().updateActivity(context);
         },
-      ),
-    );
-  }
-}
-
-class TaskList extends StatefulWidget {
-  const TaskList({
-    super.key,
-  });
-
-  @override
-  State<TaskList> createState() => _TaskListState();
-}
-
-class _TaskListState extends State<TaskList> {
-  @override
-  void initState() {
-    super.initState();
-
-    if (context.read<TaskModel>().taskStatus[0].tasks.isEmpty) {
-      context.read<TaskModel>().loadTasks(offset: 0, limit: 10);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final TaskModel taskData = Provider.of<TaskModel>(context, listen: true);
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (BuildContext context, int index) {
-          final DateTime date = taskData.groupedTasks.keys.elementAt(index);
-          final List<Task> tasks = taskData.groupedTasks[date] ?? [];
-
-          List<Widget> taskWidget = [];
-          for (Task task in tasks) {
-            taskWidget.add(TaskTile(task: task));
-          }
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(left: 32.0),
-                child: Text(
-                  DateFormat('dd MMM yyyy').format(date).toUpperCase(),
-                  style: kTaskDateTextStyle,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Column(
-                children: taskWidget,
-              ),
-            ],
-          );
-        },
-        childCount: taskData.groupedTasks.length,
       ),
     );
   }
