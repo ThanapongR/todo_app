@@ -5,15 +5,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/screens/passcode_screen.dart';
 
 class LockProvider extends ChangeNotifier {
-  Timer? inactivityTimer;
+  Timer? _inactivityTimer;
 
-  void startInactivityTimer(BuildContext context) {
-    inactivityTimer?.cancel();
-    inactivityTimer = Timer(const Duration(seconds: 10), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LockScreen()),
-      );
+  void _navigateToLockScreen(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LockScreen()),
+    );
+  }
+
+  Future<void> _startInactivityTimer(BuildContext context) async {
+    _inactivityTimer?.cancel();
+    _inactivityTimer = Timer(const Duration(seconds: 10), () {
+      _navigateToLockScreen(context);
     });
   }
 
@@ -26,14 +30,11 @@ class LockProvider extends ChangeNotifier {
 
     if (10 - elapsedTimeInSeconds <= 0) {
       if (context.mounted) {
-        await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LockScreen()),
-        );
+        _navigateToLockScreen(context);
       }
     } else {
       if (context.mounted) {
-        startInactivityTimer(context);
+        _startInactivityTimer(context);
       }
     }
   }
@@ -46,12 +47,12 @@ class LockProvider extends ChangeNotifier {
 
   void updateActivity(BuildContext context) {
     updateLastActiveTime();
-    startInactivityTimer(context);
+    _startInactivityTimer(context);
   }
 
   @override
   void dispose() {
-    inactivityTimer?.cancel();
+    _inactivityTimer?.cancel();
     super.dispose();
   }
 }

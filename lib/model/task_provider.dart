@@ -12,60 +12,43 @@ class TaskProvider extends ChangeNotifier {
   List<TaskStatus> taskStatus =
       List<TaskStatus>.generate(3, (_) => TaskStatus(tasks: []));
 
-  Future<dynamic> _getTasksList(
+  int getStatus() => _status;
+
+  Future<void> loadTasks({required int offset, required int limit}) async {
+    taskStatus[_status].loading = true;
+    taskStatus[_status].currentPage = offset;
+
+    final data = await _getTasksList(offset: offset, limit: limit);
+
+    _updateTaskStatus(data);
+
+    _genGroupedTasks();
+
+    Future.delayed(const Duration(milliseconds: 20), () {
+      taskStatus[_status].loading = false; // Reset the flag after
+    });
+
+    notifyListeners();
+  }
+
+  Future<Map<String, dynamic>> _getTasksList(
       {required int offset, required int limit}) async {
-    String status = '';
+    List<String> statusValues = ['TODO', 'DOING', 'DONE'];
+    String status = statusValues[_status];
 
-    if (_status == 0) {
-      status = 'TODO';
-    } else if (_status == 1) {
-      status = 'DOING';
-    } else if (_status == 2) {
-      status = 'DONE';
-    }
-
-    NetworkHelper networkHelper = NetworkHelper(
-      url: Uri.parse(
-          '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=$status'),
-    );
-
-    // print(
-    //     '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=$status');
-
+    Uri url = Uri.parse(
+        '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=$status');
+    NetworkHelper networkHelper = NetworkHelper(url: url);
     dynamic tasksList = await networkHelper.getData();
 
     return tasksList;
   }
 
-  void _genGroupedTasks() {
-    groupedTasks.clear();
-    for (final Task task in taskStatus[_status].tasks) {
-      DateTime dateTime = DateTime(
-          task.createdAt.year, task.createdAt.month, task.createdAt.day);
-      if (!groupedTasks.containsKey(dateTime)) {
-        groupedTasks[dateTime] = [];
-      }
-      groupedTasks[dateTime]?.add(task);
-    }
-  }
+  void _updateTaskStatus(Map<String, dynamic> data) {
+    final tasks = data['tasks'] as List<dynamic>? ?? [];
 
-  int _getNextPage() {
-    if (taskStatus[_status].currentPage < taskStatus[_status].totalPages) {
-      final nextPage = taskStatus[_status].currentPage + 1;
-      return nextPage;
-    } else {
-      return -1;
-    }
-  }
-
-  void loadTasks({required int offset, required int limit}) async {
-    taskStatus[_status].loading = true;
-    taskStatus[_status].currentPage = offset;
-
-    dynamic data = await _getTasksList(offset: offset, limit: limit);
-
-    for (var d in data['tasks'] ?? []) {
-      final Task task = Task(
+    for (final d in tasks) {
+      final task = Task(
         id: d['id'] ?? '',
         title: d['title'] ?? '',
         description: d['description'] ?? '',
@@ -77,19 +60,26 @@ class TaskProvider extends ChangeNotifier {
         taskStatus[_status].tasks.add(task);
       }
     }
+
     taskStatus[_status].totalPages = (data['totalPages'] ?? 1) - 1;
+  }
 
-    _genGroupedTasks();
+  void _genGroupedTasks() {
+    groupedTasks.clear();
+    for (Task task in taskStatus[_status].tasks) {
+      DateTime dateTime = DateTime(
+          task.createdAt.year, task.createdAt.month, task.createdAt.day);
+      groupedTasks.putIfAbsent(dateTime, () => []).add(task);
+    }
+  }
 
-    Future.delayed(const Duration(milliseconds: 20), () {
-      taskStatus[_status].loading = false; // Reset the flag after
-    });
-
-    notifyListeners();
+  int _getNextPage() {
+    final nextPage = taskStatus[_status].currentPage + 1;
+    return nextPage <= taskStatus[_status].totalPages ? nextPage : -1;
   }
 
   Future<void> loadMoreItems() async {
-    if (taskStatus[_status].loading == false) {
+    if (!taskStatus[_status].loading) {
       int nextPage = _getNextPage();
       if (nextPage >= 0) {
         loadTasks(offset: nextPage, limit: 10);
@@ -105,10 +95,6 @@ class TaskProvider extends ChangeNotifier {
       _genGroupedTasks();
     }
     notifyListeners();
-  }
-
-  int getStatus() {
-    return _status;
   }
 
   void removeTask(String id) {
