@@ -4,9 +4,7 @@ import 'package:todo_app/model/task_model.dart';
 import 'package:todo_app/utilities/constants.dart';
 
 class TaskBadge extends StatelessWidget {
-  const TaskBadge({
-    super.key,
-  });
+  const TaskBadge({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,20 +22,11 @@ class TaskBadge extends StatelessWidget {
       child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Badge(
-            title: 'To-do',
-            index: 0,
-          ),
+          Badge(title: 'To-do', index: 0),
           SizedBox(width: 8.0),
-          Badge(
-            title: 'Doing',
-            index: 1,
-          ),
+          Badge(title: 'Doing', index: 1),
           SizedBox(width: 8.0),
-          Badge(
-            title: 'Done',
-            index: 2,
-          ),
+          Badge(title: 'Done', index: 2),
         ],
       ),
     );

@@ -3,9 +3,7 @@ import 'package:todo_app/utilities/constants.dart';
 import 'package:todo_app/widgets/task_badge.dart';
 
 class AppBar extends StatelessWidget {
-  const AppBar({
-    super.key,
-  });
+  const AppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +22,7 @@ class AppBar extends StatelessWidget {
       ),
       flexibleSpace: FlexibleSpaceBar(
         expandedTitleScale: 1.0,
-        title: const SafeArea(
-          child: TaskBadge(),
-        ),
+        title: const SafeArea(child: TaskBadge()),
         background: SafeArea(
           child: Container(
             padding: const EdgeInsets.only(left: 32.0, right: 16.0),

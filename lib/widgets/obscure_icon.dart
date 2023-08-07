@@ -4,10 +4,7 @@ import 'package:todo_app/utilities/constants.dart';
 class ObscureIcon extends StatelessWidget {
   final bool checked;
 
-  const ObscureIcon({
-    super.key,
-    required this.checked,
-  });
+  const ObscureIcon({super.key, required this.checked});
 
   @override
   Widget build(BuildContext context) {

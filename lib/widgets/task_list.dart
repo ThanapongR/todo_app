@@ -39,9 +39,7 @@ class TaskList extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8.0),
-              Column(
-                children: taskWidget,
-              ),
+              Column(children: taskWidget),
             ],
           );
         },

@@ -29,8 +29,8 @@ class TaskModel extends ChangeNotifier {
           '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=$status'),
     );
 
-    print(
-        '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=$status');
+    // print(
+    //     '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=$status');
 
     dynamic tasksList = await networkHelper.getData();
 

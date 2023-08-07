@@ -5,10 +5,7 @@ import 'package:todo_app/model/task_model.dart';
 import 'package:todo_app/utilities/constants.dart';
 
 class TaskTile extends StatelessWidget {
-  const TaskTile({
-    super.key,
-    required this.task,
-  });
+  const TaskTile({super.key, required this.task});
 
   final Task task;
 
