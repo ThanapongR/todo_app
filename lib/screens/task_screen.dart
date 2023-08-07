@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide AppBar;
 import 'package:provider/provider.dart';
 import 'package:todo_app/model/lock_model.dart';
+import 'package:todo_app/model/scroll_controller_model.dart';
 import 'package:todo_app/model/task_model.dart';
 import 'package:todo_app/widgets/appbar.dart';
 import 'package:todo_app/widgets/task_list.dart';
@@ -10,16 +11,27 @@ class TaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ScrollController scrollController = ScrollController();
+    context.read<LockModel>().loadLastActiveTime(context);
 
-    scrollController.addListener(() {
-      if (scrollController.position.pixels >=
-          scrollController.position.maxScrollExtent - 100.0) {
-        context.read<TaskModel>().loadMoreItems();
+    ScrollControllerModel scrollControllerModelRead =
+        context.read<ScrollControllerModel>();
+    ScrollController scrollController =
+        scrollControllerModelRead.scrollController;
+
+    scrollControllerModelRead.addScrollListener(() {
+      if (context.mounted) {
+        scrollControllerModelRead.saveScrollOffset();
+        if (scrollController.position.pixels >=
+            scrollController.position.maxScrollExtent - 100.0) {
+          context.read<TaskModel>().loadMoreItems();
+        }
       }
     });
 
-    context.read<LockModel>().loadLastActiveTime(context);
+    // Restore the scroll offset when returning to this screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ScrollControllerModel>().restoreScrollOffset();
+    });
 
     return Scaffold(
       body: Listener(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/model/scroll_controller_model.dart';
 import 'package:todo_app/model/task_model.dart';
 import 'package:todo_app/utilities/constants.dart';
 
@@ -76,6 +77,7 @@ class Badge extends StatelessWidget {
           ),
         ),
         onTap: () {
+          context.read<ScrollControllerModel>().resetScrollOffset();
           context.read<TaskModel>().changeStatus(index);
         },
       ),

@@ -11,9 +11,9 @@ class TaskList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TaskModel taskDataRead = context.read<TaskModel>();
-    if (taskDataRead.taskStatus[0].tasks.isEmpty) {
-      taskDataRead.loadTasks(offset: 0, limit: 10);
+    final TaskModel taskModelRead = context.read<TaskModel>();
+    if (taskModelRead.taskStatus[0].tasks.isEmpty) {
+      taskModelRead.loadTasks(offset: 0, limit: 10);
     }
 
     final TaskModel taskData = Provider.of<TaskModel>(context, listen: true);
