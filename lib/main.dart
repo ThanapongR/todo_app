@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/model/lock_model.dart';
 import 'package:todo_app/model/passcode_model.dart';
 import 'package:todo_app/model/task_model.dart';
 import 'package:todo_app/screens/task_screen.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => TaskModel()),
         ChangeNotifierProvider(create: (context) => PasscodeModel()),
+        ChangeNotifierProvider(create: (context) => LockModel()),
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -1,12 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart' hide AppBar;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_app/model/lock_model.dart';
 import 'package:todo_app/model/task.dart';
 import 'package:todo_app/model/task_model.dart';
-import 'package:todo_app/screens/passcode_screen.dart';
 import 'package:todo_app/utilities/constants.dart';
 import 'package:todo_app/widgets/appbar.dart';
 import 'package:todo_app/widgets/task_tile.dart';
@@ -19,52 +16,10 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  Timer? _inactivityTimer;
-
-  Future<void> _loadLastActiveTime() async {
-    final prefs = await SharedPreferences.getInstance();
-    final lastActiveTimestamp = prefs.getInt('lastActiveTimestamp') ?? 0;
-    final currentTime = DateTime.now().millisecondsSinceEpoch;
-    final elapsedTimeInSeconds =
-        ((currentTime - lastActiveTimestamp) / 1000).round();
-
-    if (10 - elapsedTimeInSeconds <= 0) {
-      if (context.mounted) {
-        await Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LockScreen()),
-        );
-      }
-    } else {
-      _startInactivityTimer();
-    }
-  }
-
-  void _startInactivityTimer() {
-    _inactivityTimer?.cancel();
-    _inactivityTimer = Timer(const Duration(seconds: 10), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LockScreen()),
-      );
-    });
-  }
-
-  Future<void> _updateLastActiveTime() async {
-    final prefs = await SharedPreferences.getInstance();
-    final currentTime = DateTime.now().millisecondsSinceEpoch;
-    await prefs.setInt('lastActiveTimestamp', currentTime);
-  }
-
-  void _updateActivity() {
-    _updateLastActiveTime();
-    _startInactivityTimer();
-  }
-
   @override
   void initState() {
     super.initState();
-    _loadLastActiveTime();
+    context.read<LockModel>().loadLastActiveTime(context);
   }
 
   @override
@@ -90,19 +45,13 @@ class _TaskScreenState extends State<TaskScreen> {
           ],
         ),
         onPointerDown: (_) {
-          _updateActivity();
+          context.read<LockModel>().updateActivity(context);
         },
         onPointerMove: (_) {
-          _updateActivity();
+          context.read<LockModel>().updateActivity(context);
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _inactivityTimer?.cancel(); // Cancel the timer when the widget is disposed
-    super.dispose();
   }
 }
 
