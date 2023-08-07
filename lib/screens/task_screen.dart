@@ -5,19 +5,8 @@ import 'package:todo_app/model/task_model.dart';
 import 'package:todo_app/widgets/appbar.dart';
 import 'package:todo_app/widgets/task_list.dart';
 
-class TaskScreen extends StatefulWidget {
+class TaskScreen extends StatelessWidget {
   const TaskScreen({super.key});
-
-  @override
-  State<TaskScreen> createState() => _TaskScreenState();
-}
-
-class _TaskScreenState extends State<TaskScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<LockModel>().loadLastActiveTime(context);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +18,8 @@ class _TaskScreenState extends State<TaskScreen> {
         context.read<TaskModel>().loadMoreItems();
       }
     });
+
+    context.read<LockModel>().loadLastActiveTime(context);
 
     return Scaffold(
       body: Listener(
