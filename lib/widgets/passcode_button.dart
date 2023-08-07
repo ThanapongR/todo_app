@@ -29,8 +29,7 @@ class PassCodeButton extends StatelessWidget {
           ),
         ),
         onTap: () async {
-          Provider.of<PasscodeModel>(context, listen: false)
-              .addPasscode(context, title);
+          context.read<PasscodeModel>().addPasscode(context, title);
         },
       ), // Red will correctly spread over gradient
     );

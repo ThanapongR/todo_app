@@ -76,7 +76,7 @@ class Badge extends StatelessWidget {
           ),
         ),
         onTap: () {
-          Provider.of<TaskModel>(context, listen: false).changeStatus(index);
+          context.read<TaskModel>().changeStatus(index);
         },
       ),
     );

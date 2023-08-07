@@ -16,7 +16,7 @@ class TaskTile extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(color: Colors.red),
       onDismissed: (_) {
-        Provider.of<TaskModel>(context, listen: false).removeTask(task.id);
+        context.read<TaskModel>().removeTask(task.id);
       },
       child: Container(
         margin: const EdgeInsets.only(left: 32.0, bottom: 16.0, right: 32.0),
