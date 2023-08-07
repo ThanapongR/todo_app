@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/screens/task_screen.dart';
 
-class PasscodeModel extends ChangeNotifier {
+class PasscodeProvider extends ChangeNotifier {
   String passcode = '';
 
   Future<void> addPasscode(BuildContext context, String num) async {

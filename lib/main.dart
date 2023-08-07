@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/model/lock_model.dart';
-import 'package:todo_app/model/passcode_model.dart';
-import 'package:todo_app/model/scroll_controller_model.dart';
-import 'package:todo_app/model/task_model.dart';
+import 'package:todo_app/model/lock_provider.dart';
+import 'package:todo_app/model/passcode_provider.dart';
+import 'package:todo_app/model/scroll_controller_provider.dart';
+import 'package:todo_app/model/task_provider.dart';
 import 'package:todo_app/screens/task_screen.dart';
 
 void main() {
@@ -18,10 +18,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => TaskModel()),
-        ChangeNotifierProvider(create: (context) => ScrollControllerModel()),
-        ChangeNotifierProvider(create: (context) => PasscodeModel()),
-        ChangeNotifierProvider(create: (context) => LockModel()),
+        ChangeNotifierProvider(create: (context) => TaskProvider()),
+        ChangeNotifierProvider(create: (context) => ScrollControllerProvider()),
+        ChangeNotifierProvider(create: (context) => PasscodeProvider()),
+        ChangeNotifierProvider(create: (context) => LockProvider()),
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,

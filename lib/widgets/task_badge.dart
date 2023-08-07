@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/model/scroll_controller_model.dart';
-import 'package:todo_app/model/task_model.dart';
+import 'package:todo_app/model/scroll_controller_provider.dart';
+import 'package:todo_app/model/task_provider.dart';
 import 'package:todo_app/utilities/constants.dart';
 
 class TaskBadge extends StatelessWidget {
@@ -46,7 +46,7 @@ class Badge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TaskModel taskData = Provider.of<TaskModel>(context, listen: true);
+    TaskProvider taskData = Provider.of<TaskProvider>(context, listen: true);
     return Container(
       padding: const EdgeInsets.only(
         left: 12.0,
@@ -77,8 +77,8 @@ class Badge extends StatelessWidget {
           ),
         ),
         onTap: () {
-          context.read<ScrollControllerModel>().resetScrollOffset();
-          context.read<TaskModel>().changeStatus(index);
+          context.read<ScrollControllerProvider>().resetScrollOffset();
+          context.read<TaskProvider>().changeStatus(index);
         },
       ),
     );

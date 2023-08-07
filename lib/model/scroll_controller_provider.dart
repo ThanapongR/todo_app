@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ScrollControllerModel extends ChangeNotifier {
+class ScrollControllerProvider extends ChangeNotifier {
   final ScrollController _scrollController = ScrollController();
   double _savedScrollOffset = 0.0;
 

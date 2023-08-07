@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/model/task.dart';
-import 'package:todo_app/model/task_model.dart';
+import 'package:todo_app/model/task_provider.dart';
 import 'package:todo_app/utilities/constants.dart';
 
 class TaskTile extends StatelessWidget {
@@ -16,7 +16,7 @@ class TaskTile extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(color: Colors.red),
       onDismissed: (_) {
-        context.read<TaskModel>().removeTask(task.id);
+        context.read<TaskProvider>().removeTask(task.id);
       },
       child: Container(
         margin: const EdgeInsets.only(left: 32.0, bottom: 16.0, right: 32.0),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/screens/passcode_screen.dart';
 
-class LockModel extends ChangeNotifier {
+class LockProvider extends ChangeNotifier {
   Timer? inactivityTimer;
 
   void startInactivityTimer(BuildContext context) {

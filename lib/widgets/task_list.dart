@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/model/task.dart';
-import 'package:todo_app/model/task_model.dart';
+import 'package:todo_app/model/task_provider.dart';
 import 'package:todo_app/utilities/constants.dart';
 import 'package:todo_app/widgets/task_tile.dart';
 
@@ -11,12 +11,13 @@ class TaskList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TaskModel taskModelRead = context.read<TaskModel>();
-    if (taskModelRead.taskStatus[0].tasks.isEmpty) {
-      taskModelRead.loadTasks(offset: 0, limit: 10);
+    final TaskProvider taskProvider = context.read<TaskProvider>();
+    if (taskProvider.taskStatus[0].tasks.isEmpty) {
+      taskProvider.loadTasks(offset: 0, limit: 10);
     }
 
-    final TaskModel taskData = Provider.of<TaskModel>(context, listen: true);
+    final TaskProvider taskData =
+        Provider.of<TaskProvider>(context, listen: true);
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {

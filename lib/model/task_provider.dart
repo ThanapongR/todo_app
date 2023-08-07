@@ -5,7 +5,7 @@ import 'package:todo_app/services/networking.dart';
 
 const tasksListURL = 'https://todo-list-api-mfchjooefq-as.a.run.app/todo-list';
 
-class TaskModel extends ChangeNotifier {
+class TaskProvider extends ChangeNotifier {
   Map<DateTime, List<Task>> groupedTasks = {};
   int _status = 0;
 

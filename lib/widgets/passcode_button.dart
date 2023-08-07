@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/model/passcode_model.dart';
+import 'package:todo_app/model/passcode_provider.dart';
 import 'package:todo_app/utilities/constants.dart';
 
 class PassCodeButton extends StatelessWidget {
@@ -29,7 +29,7 @@ class PassCodeButton extends StatelessWidget {
           ),
         ),
         onTap: () async {
-          context.read<PasscodeModel>().addPasscode(context, title);
+          context.read<PasscodeProvider>().addPasscode(context, title);
         },
       ), // Red will correctly spread over gradient
     );
