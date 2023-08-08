@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/screens/passcode_screen.dart';
+import 'package:todo_app/utilities/constants.dart';
 
 class LockProvider extends ChangeNotifier {
   Timer? _inactivityTimer;
@@ -16,7 +17,7 @@ class LockProvider extends ChangeNotifier {
 
   Future<void> _startInactivityTimer(BuildContext context) async {
     _inactivityTimer?.cancel();
-    _inactivityTimer = Timer(const Duration(seconds: 10), () {
+    _inactivityTimer = Timer(const Duration(seconds: kLockTime), () {
       _navigateToLockScreen(context);
     });
   }
@@ -28,7 +29,7 @@ class LockProvider extends ChangeNotifier {
     final elapsedTimeInSeconds =
         ((currentTime - lastActiveTimestamp) / 1000).round();
 
-    if (10 - elapsedTimeInSeconds <= 0) {
+    if (kLockTime - elapsedTimeInSeconds <= 0) {
       if (context.mounted) {
         _navigateToLockScreen(context);
       }

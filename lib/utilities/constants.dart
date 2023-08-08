@@ -23,6 +23,8 @@ const kPasscodeTitleTextStyle = TextStyle(
   color: Colors.black54,
 );
 
+const kLockTime = 10;
+
 const kPrimaryColor = Color(0xFFECEDFD);
 const kGreyColor = Color(0xFFF8F8F8);
 const kDarkGreyColor = Color(0xFFDFE0E5);
