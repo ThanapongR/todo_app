@@ -1,16 +1,17 @@
-# todo_app
+# To-do
 
-A new Flutter project.
+* This app will lock after inactive for 10 secs
+* Passcode is 123456
 
-## Getting Started
+## What i have learned
 
-This project is a starting point for a Flutter application.
+* How to create with Provider
+* How to handle json object
+* How to infinity load
+* How to use timer
 
-A few resources to get you started if this is your first Flutter project:
+## My result
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://github.com/ThanapongR/workshop-todo-flutter/blob/main/screenshot/todo.png"  width="30%" height="30%">
+<img src="https://github.com/ThanapongR/workshop-todo-flutter/blob/main/screenshot/doing.png"  width="30%" height="30%">
+<img src="https://github.com/ThanapongR/workshop-todo-flutter/blob/main/screenshot/passcode.png"  width="30%" height="30%">
