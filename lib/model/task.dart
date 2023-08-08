@@ -3,13 +3,13 @@ class Task {
   String title;
   String description;
   DateTime createdAt;
-  String status;
+  // String status;
 
   Task({
     required this.id,
     required this.title,
     required this.description,
     required this.createdAt,
-    required this.status,
+    // required this.status,
   });
 }

@@ -12,39 +12,47 @@ class TaskList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TaskProvider taskProvider = context.read<TaskProvider>();
-    if (taskProvider.taskStatus[0].tasks.isEmpty) {
+    if (!taskProvider.taskStatus[0].initiated) {
       taskProvider.loadTasks(offset: 0, limit: 10);
     }
 
     final TaskProvider taskData =
         Provider.of<TaskProvider>(context, listen: true);
+
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          final DateTime date = taskData.groupedTasks.keys.elementAt(index);
-          final List<Task> tasks = taskData.groupedTasks[date] ?? [];
+          if (taskData.groupedTasks.isNotEmpty) {
+            final DateTime date = taskData.groupedTasks.keys.elementAt(index);
+            final List<Task> tasks = taskData.groupedTasks[date] ?? [];
 
-          List<Widget> taskWidget = [];
-          for (Task task in tasks) {
-            taskWidget.add(TaskTile(task: task));
-          }
+            List<Widget> taskWidget = [];
+            for (Task task in tasks) {
+              taskWidget.add(TaskTile(task: task));
+            }
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(left: 32.0),
-                child: Text(
-                  DateFormat('dd MMM yyyy').format(date).toUpperCase(),
-                  style: kTaskDateTextStyle,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(left: 32.0),
+                  child: Text(
+                    DateFormat('dd MMM yyyy').format(date).toUpperCase(),
+                    style: kTaskDateTextStyle,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8.0),
-              Column(children: taskWidget),
-            ],
-          );
+                const SizedBox(height: 8.0),
+                Column(children: taskWidget),
+              ],
+            );
+          } else {
+            return const Center(
+              child: Text('No data.', style: kTaskTitleTextStyle),
+            );
+          }
         },
-        childCount: taskData.groupedTasks.length,
+        childCount:
+            taskData.groupedTasks.isNotEmpty ? taskData.groupedTasks.length : 1,
       ),
     );
   }

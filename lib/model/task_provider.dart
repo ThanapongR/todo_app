@@ -15,6 +15,7 @@ class TaskProvider extends ChangeNotifier {
   int getStatus() => _status;
 
   Future<void> loadTasks({required int offset, required int limit}) async {
+    taskStatus[_status].initiated = true;
     taskStatus[_status].loading = true;
     taskStatus[_status].currentPage = offset;
 
@@ -31,7 +32,7 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>> _getTasksList(
+  Future<Map<String, dynamic>?> _getTasksList(
       {required int offset, required int limit}) async {
     List<String> statusValues = ['TODO', 'DOING', 'DONE'];
     String status = statusValues[_status];
@@ -39,29 +40,31 @@ class TaskProvider extends ChangeNotifier {
     Uri url = Uri.parse(
         '$tasksListURL?offset=$offset&limit=$limit&sortBy=createdAt&isAsc=true&status=$status');
     NetworkHelper networkHelper = NetworkHelper(url: url);
-    dynamic tasksList = await networkHelper.getData();
+    Map<String, dynamic>? tasksList = await networkHelper.getData();
 
     return tasksList;
   }
 
-  void _updateTaskStatus(Map<String, dynamic> data) {
-    final tasks = data['tasks'] as List<dynamic>? ?? [];
+  void _updateTaskStatus(Map<String, dynamic>? data) {
+    if (data != null) {
+      final tasks = data['tasks'] as List<dynamic>? ?? [];
 
-    for (final d in tasks) {
-      final task = Task(
-        id: d['id'] ?? '',
-        title: d['title'] ?? '',
-        description: d['description'] ?? '',
-        createdAt: DateTime.tryParse(d['createdAt'] ?? '') ?? DateTime.now(),
-        status: d['status'] ?? '',
-      );
+      for (final d in tasks) {
+        final task = Task(
+          id: d['id'] ?? UniqueKey().toString(),
+          title: d['title'] ?? 'NO TITLE',
+          description: d['description'] ?? '',
+          createdAt: DateTime.tryParse(d['createdAt'] ?? '') ?? DateTime.now(),
+          // status: d['status'] ?? '',
+        );
 
-      if (!taskStatus[_status].tasks.any((obj) => obj.id == task.id)) {
-        taskStatus[_status].tasks.add(task);
+        if (!taskStatus[_status].tasks.any((obj) => obj.id == task.id)) {
+          taskStatus[_status].tasks.add(task);
+        }
       }
-    }
 
-    taskStatus[_status].totalPages = (data['totalPages'] ?? 1) - 1;
+      taskStatus[_status].totalPages = (data['totalPages'] ?? 1) - 1;
+    }
   }
 
   void _genGroupedTasks() {
